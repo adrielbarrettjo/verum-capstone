@@ -26,7 +26,7 @@ class RegistrationForm extends React.Component{
         console.log('Received values of form: ', values);
 
 
-        fetch('/new-user', {
+        fetch('3001/new-user', {
           method: 'POST',
           headers: {
             Accept: 'application/json',

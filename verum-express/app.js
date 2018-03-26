@@ -1,4 +1,3 @@
-console.log('something');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -72,7 +71,7 @@ function runServer( port = PORT) {
 	
 	return new Promise((resolve, reject) => {
 		// console.log(DATABASE_URL);
-		 mongoose.connect("mongodb://abarrettjo:shannon@ds053658.mlab.com:53658/verum", err => {
+		 mongoose.connect("mongodb://abarrettjo:shannon@ds123499.mlab.com:23499/verum", err => {
 			if (err) {
 				return reject(err); 
 			}
