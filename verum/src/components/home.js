@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import {createStore} from 'redux';
-import {Provider} from 'react-redux';
+
 import {
     BrowserRouter as Router,
     Route,
@@ -13,13 +12,52 @@ import { Card, Layout, Menu, Breadcrumb, Button } from 'antd';
 const { Header, Content, Footer } = Layout;
 
 
-export default class NewProject extends React.Component{
+export default class Home extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
       showSelection: false
     };
   } //end of constructor
+
+  componentDidMount() {
+    console.log('this is this.props:')
+    console.log(this.props);
+  }
+
+  componentWillMount() {
+    let currentJWT = localStorage.getItem('jwt');
+    let currentUser = localStorage.getItem('userName');
+    
+    if (currentJWT) {
+      console.log(currentJWT)
+      //fetchUserData
+      fetch("http://localhost:3001/api/surveys", {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userName: currentUser,  
+          }),
+
+        }) // end fetch
+            .then(res => res.json())
+            .then(({something}) => something())
+            .catch(err => {
+                console.log(err);
+              }) // end catch
+
+
+    } else {
+      // programmatically route to landing page
+      this.props.history.push('/')
+    }
+  }
+
+
+
 
   componentDidMount() {
     console.log(this.props);

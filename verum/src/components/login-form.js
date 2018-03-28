@@ -1,67 +1,128 @@
-import { Form, Icon, Input, Button } from 'antd';
+import React, { Component } from 'react';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux';
+import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, 
+  Button, AutoComplete  } from 'antd';
+import ReactDOM from 'react-dom';
+import {
+    BrowserRouter as Router,
+    Route,
+    Redirect,
+    Switch,
+    Link
+} from 'react-router-dom';
+
+
 const FormItem = Form.Item;
 
-function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
+// If existing JWT, automatically login
+// else show login
+// and a toggle to flip to the registration card.
 
-export default class Login extends React.Component{
+
+
+class LoginForm extends React.Component{
+  constructor(props) {
+  super(props);
+  // this.state = {
+  //   color: props.initialColor
+  // };
+} //end of constructor
+
   componentDidMount() {
-    // To disabled submit button at the beginning.
-    this.props.form.validateFields();
+    console.log('this is this.props:')
+    console.log(this.props);
   }
-  
-  handleSubmit = (e) => {
-    e.preventDefault();
+
+storeAuthInfo = (authToken, userName) => {
+    // set the jwt as part of the state of the app
+    localStorage.setItem('jwt', authToken);
+    localStorage.setItem('userName', userName);
+    //localStorage.set() -> use this to store things in the browser.
+    // then do localStorage.get()
+
+    // then it will be passed to child components as props.
+};  
+
+loginGetJWT = (e) => {
+  let that = this;
+
+  e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-      }
-    });
-  }
+
+        fetch("http://localhost:3001/login", {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: values.userName,
+            password: values.password
+            
+          }),
+
+        }) // end fetch
+
+       // .then(res => normalizeResponseErrors(res))
+            .then(res => res.json())
+            .then(({authToken}) => this.storeAuthInfo(authToken, values.userName))
+            .then( () => { window.location.href= '/home'})
+            .catch(err => {
+                console.log(err);
+              }) // end catch
+      } // end if 
+    }) // end validateFields 
+    }; // end getJWT
+
+
 
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
-
-    // Only show error after a field is touched.
-    const userNameError = isFieldTouched('userName') && getFieldError('userName');
-    const passwordError = isFieldTouched('password') && getFieldError('password');
     return (
-      <Form layout="inline" onSubmit={this.handleSubmit}>
-        <FormItem
-          validateStatus={userNameError ? 'error' : ''}
-          help={userNameError || ''}
-        >
-          {getFieldDecorator('userName', {
-            rules: [{ required: true, message: 'Please input your username!' }],
-          })(
-            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
-          )}
-        </FormItem>
-        <FormItem
-          validateStatus={passwordError ? 'error' : ''}
-          help={passwordError || ''}
-        >
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }],
-          })(
-            <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
-          )}
-        </FormItem>
-        <FormItem>
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled={hasErrors(getFieldsError())}
-          >
-            Log in
-          </Button>
-        </FormItem>
-      </Form>
-    );
-  }
-}
+      <div>
+   
+      <Form layout="inline" onSubmit={this.handleSubmit}
+      style= {{marginTop: '80px'}}>
+      
+            <Row type={'flex'} align={'center'}>
+        <Col >
+            <FormItem>
+              {getFieldDecorator('userName', {
+                rules: [{ required: true, message: 'Please input your username!' }],
+              })(
+                <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
+              )}
+            </FormItem>
+             </Col>
+            </Row>
+            <Row type={'flex'} align={'center'}>
+        <Col > 
+            <FormItem>
+              {getFieldDecorator('password', {
+                rules: [{ required: true, message: 'Please input a valid password (min 8 char)!' }],
+              })(
+                <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Password" />
+              )}
+            </FormItem>
+            </Col>
+            </Row>
+            
 
-const WrappedHorizontalLoginForm = Form.create()(HorizontalLoginForm);
+<Row type={'flex'} align={'center'}>
+        <Col >
+           <Button onClick = {this.loginGetJWT} > Submit </Button>
+            </Col>
+            </Row>
+       </Form>
+       </div>
+      )     
+} // ends render 
 
-ReactDOM.render(<WrappedHorizontalLoginForm />, mountNode);
+} // end class
+
+const WrappedLoginForm = Form.create()(LoginForm);
+
+export default WrappedLoginForm;

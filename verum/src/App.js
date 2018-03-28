@@ -22,6 +22,9 @@ const { Header, Content, Footer } = Layout;
 
 
 export default class App extends React.Component {
+
+
+
   render() {
   return (
     <Router>
@@ -31,7 +34,7 @@ export default class App extends React.Component {
             
             <Route exact path="/" component={Landing} />
             <Route exact path="/login" component={Login} />
-             <Route exact path="/home" component={Home} />
+             < Route exact path="/home" component={Home} />
              <Route exact path="/newproject" component={WrappedNewProject} />
         </Switch>
                 
